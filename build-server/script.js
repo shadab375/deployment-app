@@ -47,6 +47,7 @@ async function init() {
     });
 
     publishLog(`Starting to upload`);
+ 
     for (const file of distFolderContents) {
       const filePath = path.join(distFolderPath, file);
       if (fs.lstatSync(filePath).isDirectory()) continue;
