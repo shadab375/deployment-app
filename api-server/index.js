@@ -1,13 +1,17 @@
+require('dotenv').config()
+
 const express = require('express')
+const cors = require('cors') // Import the cors package
 const { generateSlug } = require('random-word-slugs')
 const { ECSClient, RunTaskCommand } = require('@aws-sdk/client-ecs')
 const { Server } = require('socket.io')
 const Redis = require('ioredis')
 
 const app = express()
+app.use(cors()) // Use the cors middleware
 const PORT = 9000
 
-const subscriber = new Redis('')
+const subscriber = new Redis(process.env.REDIS_CONNECTION_STRING)
 
 const io = new Server({ cors: '*' })
 
@@ -21,16 +25,16 @@ io.on('connection', socket => {
 io.listen(9002, () => console.log('Socket Server 9002'))
 
 const ecsClient = new ECSClient({
-    region: '',
+    region: process.env.AWS_REGION,
     credentials: {
-        accessKeyId: '',
-        secretAccessKey: ''
-    }
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_KEY,
+    },
 })
 
 const config = {
-    CLUSTER: '',
-    TASK: ''
+    CLUSTER: process.env.ECS_CLUSTER_ARN,
+    TASK: process.env.ECS_TASK_ARN
 }
 
 app.use(express.json())
@@ -48,8 +52,8 @@ app.post('/project', async (req, res) => {
         networkConfiguration: {
             awsvpcConfiguration: {
                 assignPublicIp: 'ENABLED',
-                subnets: ['', '', ''],
-                securityGroups: ['']
+                subnets: ['subnet-0e9cb4e8ca9b0a0a5', 'subnet-0fba35b11a6fc7de9', 'subnet-0ed39983cd467a51d'],
+                securityGroups: ['sg-05b40fe6ffdc9259a']
             }
         },
         overrides: {
