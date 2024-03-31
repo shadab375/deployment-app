@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 const { exec } = require("child_process");
 const path = require("path");
 const fs = require("fs");
@@ -5,13 +7,13 @@ const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 const mime = require("mime-types");
 const Redis = require("ioredis");
 
-const publisher = new Redis("");
+const publisher = new Redis(process.env.REDIS_CONNECTION_STRING);
 
 const s3Client = new S3Client({
-  region: "ap-south-1",
+  region: process.env.AWS_REGION,
   credentials: {
-    accessKeyId: process.env.ACCESS_KEY_ID,
-    secretAccessKey: process.env.SECRET_ACCESS_KEY,
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET,
   },
 });
 
@@ -42,6 +44,12 @@ async function init() {
     console.log("Build Complete");
     publishLog(`Build Complete`);
     const distFolderPath = path.join(__dirname, "output", "dist");
+
+    // Check if the directory exists, if not, create it
+    if (!fs.existsSync(distFolderPath)){
+        fs.mkdirSync(distFolderPath, { recursive: true });
+    }
+
     const distFolderContents = fs.readdirSync(distFolderPath, {
       recursive: true,
     });
@@ -56,7 +64,7 @@ async function init() {
       publishLog(`uploading ${file}`);
 
       const command = new PutObjectCommand({
-        Bucket: "vercel-clone-outputs",
+        Bucket: "sht-deployment-bucket",
         Key: `__outputs/${PROJECT_ID}/${file}`,
         Body: fs.createReadStream(filePath),
         ContentType: mime.lookup(filePath),
