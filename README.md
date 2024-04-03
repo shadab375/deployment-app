@@ -13,7 +13,9 @@ This Project contains following services and folders:
 1. Run `npm install` in all the 3 services i.e. `api-server`, `build-server` and `s3-reverse-proxy`
 2. Docker build the `build-server` and push the image to AWS ECR.
 3. Setup the `api-server` by providing all the required config such as TASK ARN and CLUSTER arn.
-4. Run `node index.js` in `api-server` and `s3-reverse-proxy`
+4. Setup the required .env variables in a `.env` file in `api-server` file.
+5. Run `node index.js` in `api-server` and `s3-reverse-proxy`
+6. Run `npm run dev` in `frontend-nodejs`.
 
 At this point following services would be up and running:
 
