@@ -14,6 +14,7 @@ This Project contains following services and folders:
 2. Docker build the `build-server` and push the image to AWS ECR.
 3. Setup the `api-server` by providing all the required config such as TASK ARN and CLUSTER arn.
 4. Setup the required .env variables in a `.env` file in `api-server` file.
+5. Run `npx prisma migrate dev --name init` in `api-server`
 5. Run `node index.js` in `api-server` and `s3-reverse-proxy`
 6. Run `npm run dev` in `frontend-nodejs`.
 
